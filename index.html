@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="en"><head>
+  <base href="/">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+  <title>Meal Finder</title>
+
+  <!-- CSS  -->
+  <style type="text/css">@font-face{font-family:'Material Icons';font-style:normal;font-weight:400;src:url(https://fonts.gstatic.com/s/materialicons/v128/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');}.material-icons{font-family:'Material Icons';font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;}</style>
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <style type="text/css">@font-face{font-family:'Carter One';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/carterone/v17/q5uCsoe5IOB2-pXv9UcNExN8hK5SAMo.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/billboard.js/3.4.1/billboard.min.css" integrity="sha512-I/sVbNCPAX6qn/wui2d9+gHj8TITCTP5SNRkCzdPPt/9pzVe/lqrLK2jc/0DYVJiwQiTzo2YRbpXbnVocwHuXg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/billboard.js/3.4.1/billboard.min.js" integrity="sha512-FXDqFIINM8hfNzm3ltyOoTc7be0sZ4ClUmMMPGrOhF/mzOUwoa2m6VLDGG2m6fZdAC2OpbiKwR4qkw6e9gfvOg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/billboard.js/3.4.1/billboard.pkgd.min.js" integrity="sha512-FbJ8ceuaDmeNS+T/XLankR3ec5qYZnGBLaOYuTLZQt/5h0KVDEGSvP9yd5GQeVtLvFMY5iAKe62e9wrlhQ4jYA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+  <style>
+
+  </style>
+<link rel="stylesheet" href="styles.ef46db3751d8e999.css"></head>
+
+<body>
+
+  <div class="">
+
+    <app-root></app-root>
+  </div>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+
+    function intializeChartData() {
+      /////// check if user did not set any diet preferences at all
+      let preferences = JSON.parse(localStorage['userPreferences'])[0];
+      let data = JSON.parse(localStorage['searchResults']);
+      let noUserPreferences = preferences.fatMacroAmount === "" || preferences.carbsMacroAmount === "" || preferences.proteinMacroAmount === "" || preferences.sugarMacroAmount === "" || preferences.caloriesMacroAmount === ""
+      if (noUserPreferences) {
+        document.querySelectorAll(".modal-trigger").forEach((one, index) => {
+          one.addEventListener("click", function (e) {
+            document.querySelectorAll(".inner1")[index].innerHTML = `<p>Not all dietary preferences have been set. Complete all fields dietrary prefences form to see nutrition analysis</p>`
+          })
+        })
+      } else {
+        document.querySelectorAll(".modal-trigger").forEach((one, index) => {
+          one.addEventListener("click", function (e) {
+            let recipeYield = data[index].yield;
+            let recipeCalories = data[index].calories;
+            let recipeMacroFat = data[index].nutrients[0].quantity;
+            let recipeMacroCarbs = data[index].nutrients[1].quantity;
+            let recipeMacroSugar = data[index].nutrients[2].quantity;
+            let recipeMacroProtein = data[index].nutrients[3].quantity;
+
+            document.querySelectorAll(".inner1")[index].id = "chart1"
+            document.querySelectorAll(".legend")[index].id = "legend"
+            let arr = []
+            let colorsArr = [];
+            let valuesArr = []
+            //////////Build colums for nutrition analysis
+            if (preferences.fatMacroAmount !== "") {
+              recipeMacroFat = recipeMacroFat / recipeYield
+              let calc = recipeMacroFat / parseInt(preferences.fatMacroAmount)
+              calc = Math.round(calc * 100)
+              let innerArr1 = ['Fat', calc]
+              arr.push(innerArr1);
+              colorsArr.push("orange");
+              valuesArr.push(0)
+            }
+            if (preferences.carbsMacroAmount !== "") {
+              recipeMacroCarbs = recipeMacroCarbs / recipeYield
+              let calc = recipeMacroCarbs / parseInt(preferences.carbsMacroAmount)
+              calc = Math.round(calc * 100)
+              let innerArr2 = ['Carbs', calc]
+              arr.push(innerArr2)
+              colorsArr.push("indigo");
+              valuesArr.push(0)
+            }
+            if (preferences.proteinMacroAmount !== "") {
+              recipeMacroProtein = recipeMacroProtein / recipeYield
+              let calc = recipeMacroProtein / parseInt(preferences.proteinMacroAmount)
+              calc = Math.round(calc * 100)
+              let innerArr3 = ['Protein', calc]
+              arr.push(innerArr3);
+              colorsArr.push("violet");
+              valuesArr.push(0)
+            }
+            if (preferences.sugarMacroAmount !== "") {
+              recipeMacroSugar = recipeMacroSugar / recipeYield
+              let calc = recipeMacroSugar / parseInt(preferences.sugarMacroAmount)
+              calc = Math.round(calc)
+              let innerArr4 = ['Sugar', calc]
+              arr.push(innerArr4);
+              colorsArr.push("yellow");
+              valuesArr.push(0)
+            }
+            if (preferences.calories !== "") {
+              recipeCalories = recipeCalories / recipeYield
+              let calc = recipeCalories / parseInt(preferences.calories)
+              calc = Math.round(calc * 100)
+              let innerArr5 = ['Calories', calc]
+              arr.push(innerArr5);
+              colorsArr.push("green");
+              valuesArr.push(0)
+            }
+            ////////////Initialize billboard multiguage component
+            var chart1 = bb.generate({
+              data: {
+                columns: arr,
+                type: "gauge" // for ESM specify as: gauge()
+              },
+              legend: {
+                contents: {
+                  bindto: "#legend",
+                  template: "<span style='color:#fff;padding:10px;background-color:{=COLOR}'>{=TITLE}</span>"
+                }
+              },
+              gauge: {
+                type: "multi",
+                max: 100,
+                min: 0,
+                expand: true,
+                arcs: {
+                  minWidth: 5
+                },
+                width: 110,
+              },
+              size: {
+                height: 250
+              },
+              bindto: "#chart1"
+            });
+          })
+        })
+
+
+        /////////////// reset ids when modal is closed to tear down recipe result analysis chart component
+        document.querySelectorAll(".modal-close").forEach((one, index) => {
+          one.addEventListener("click", function (e) {
+            document.querySelectorAll(".inner1")[index].id = ""
+            document.querySelectorAll(".legend")[index].id = ""
+          })
+          document.querySelectorAll(".modal-trigger").forEach((one, index) => {
+            one.removeEventListener("click", function (e) {
+              document.querySelectorAll(".inner1")[index].innerHTML = ""
+            })
+          })
+        })
+      }
+    }
+
+
+    function insertModalCode() {
+      var elems = document.querySelectorAll('.modal');
+      var instances = M.Modal.init(elems);
+      document.querySelectorAll(".modal-trigger").forEach((modalTrigger, index) => {
+        modalTrigger.addEventListener("click", function () {
+          var instance = M.Modal.getInstance(elems[index]);
+          instance.open();
+
+        })
+      })
+    }
+
+    function showHideCheckBoxes() {
+      let fatMacroInd = document.querySelector("#fatMacroInd");
+      let carbsMacroInd = document.querySelector("#carbsMacroInd");
+      let sugarMacroInd = document.querySelector("#sugarMacroInd");
+      let proteinMacroInd = document.querySelector("#proteinMacroInd");
+
+      if (fatMacroInd) {
+        document.querySelector("#fatMacroInd").addEventListener("click", function (e) {
+          if (e.target.checked) {
+            document.querySelector("#fatMacroAmount").style.display = "block"
+            document.querySelector(".label_fatMacro").style.display = "block"
+          } else {
+            document.querySelector("#fatMacroAmount").style.display = "none"
+            document.querySelector(".label_fatMacro").style.display = "none"
+          }
+        });
+      }
+      if (carbsMacroInd) {
+        document.querySelector("#carbsMacroInd").addEventListener("click", function (e) {
+          if (e.target.checked) {
+            document.querySelector("#carbsMacroAmount").style.display = "block"
+            document.querySelector(".label_carbsMacro").style.display = "block"
+          } else {
+            document.querySelector("#carbsMacroAmount").style.display = "none"
+            document.querySelector(".label_carbsMacro").style.display = "none"
+          }
+        });
+      }
+      if (sugarMacroInd) {
+        document.querySelector("#sugarMacroInd").addEventListener("click", function (e) {
+          if (e.target.checked) {
+            document.querySelector("#sugarMacroAmount").style.display = "block"
+            document.querySelector(".label_sugarMacro").style.display = "block"
+          } else {
+            document.querySelector("#sugarMacroAmount").style.display = "none"
+            document.querySelector(".label_sugarMacro").style.display = "none"
+          }
+        });
+      }
+      if (proteinMacroInd) {
+        document.querySelector("#proteinMacroInd").addEventListener("click", function (e) {
+          if (e.target.checked) {
+            document.querySelector("#proteinMacroAmount").style.display = "block"
+            document.querySelector(".label_proteinMacro").style.display = "block"
+          } else {
+            document.querySelector("#proteinMacroAmount").style.display = "none"
+            document.querySelector(".label_proteinMacro").style.display = "none"
+          }
+        });
+      }
+    }
+
+    function launchToast() {
+      M.toast({ html: 'Saved!' })
+
+    }
+
+
+    (function ($) {
+      $(function () {
+
+        $('.sidenav').sidenav();
+
+
+        $('.dropdown-trigger').dropdown();
+
+        $('.modal').modal();
+        $('select').formSelect();
+
+
+
+      });
+    })(jQuery); 
+  </script>
+<script src="runtime.9db62c9d9b43f7d4.js" type="module"></script><script src="polyfills.7ecf9f96fa0db3f3.js" type="module"></script><script src="main.f64377b9300c3359.js" type="module"></script>
+
+
+
+
+</body></html>
